@@ -1,101 +1,19 @@
-# USA Business Email Scraper
+🚀 USA Business Email Scraper (Zentrixa Edition)This high-performance Python CLI tool is engineered to build B2B lead lists targeting the U.S. market. It bridges the gap between raw map data and active web intelligence by combining OpenStreetMap (OSM) queries with automated website crawling.💎 Key FeaturesMulti-Source Extraction: Pulls names, websites, and emails directly from OSM.Deep Web Enrichment: Automatically visits business websites to find "Contact" or "About" pages.Lead Intelligence: Uses Regex to identify Owner, CEO, and Founder names from site metadata.Deduplication: Ensures you never pay for or contact the same lead twice.No Heavy Dependencies: Designed to run with Python’s standard library for maximum portability.🛠️ 1. Setup & InstallationFollow these steps to set up your environment on Windows (MINGW64/CMD) or Linux.Bash# 1. Navigate to your project folder
+cd /path/to/your/leads_folder
 
-Simple CLI to collect U.S. business lead data:
+# 2. Create a virtual environment to keep things clean
+python -m venv .venv
 
-- **name**
-- **email**
-- **website**
-- **owner_name** (best effort)
-- **company_name**
-
----
-
-## 1) Super quick install (recommended)
-
-```bash
-cd /workspace/email_scraper
-python3 -m venv .venv
+# 3. Activate the environment
+# On Windows:
+source .venv/Scripts/activate 
+# On Mac/Linux:
 source .venv/bin/activate
-python -m pip install --upgrade pip
+
+# 4. Install requirements (SerpApi, gspread, etc.)
 pip install -r requirements.txt
-```
-
-> Current version is **stdlib-only** (no external package required), so install is very lightweight.
-
----
-
-## 2) Get 1000+ leads at a time
-
-Use the new `--target-per-state` option (default is already 1000).
-
-```bash
-python scraper.py --states "California" --target-per-state 1200 --limit-per-query 700 --output ca_1200.csv
-```
-
-How this works:
-- Scraper runs multiple Overpass tag queries (`amenity`, `shop`, `office`, `craft`, `tourism`, `leisure`).
-- It keeps deduplicating and stops early once target count is reached.
-- If one tag query fails, it continues with the rest.
-
----
-
-## 3) Common commands
-
-### Multi-state run (large pull)
-
-```bash
-python scraper.py --states "California" "Texas" --target-per-state 1000 --limit-per-query 600 --output leads_2states.csv
-```
-
-### Faster run (skip website crawling)
-
-```bash
-python scraper.py --states "Florida" --target-per-state 1500 --skip-enrichment --output fl_fast.csv
-```
-
-### Restrict to specific OSM groups only
-
-```bash
-python scraper.py --states "New York" --amenity --shop --office --target-per-state 1000 --limit-per-query 800
-```
-
----
-
-## 4) Output CSV columns
-
-- `name`
-- `email`
-- `website`
-- `owner_name`
-- `company_name`
-- `state`
-- `source`
-
----
-
-## 5) Troubleshooting
-
-### A) `python: command not found`
-Use `python3` instead.
-
-### B) Overpass/network/proxy errors (e.g. `403 Forbidden`)
-Usually environment/network policy.
-
-Options:
-- Run from a machine/network with outbound HTTPS allowed.
-- Configure `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`.
-- Retry later (public Overpass can be rate-limited).
-
-### C) Not reaching 1000 leads
-- Increase `--limit-per-query` (e.g. 1000).
-- Use larger/business-dense states.
-- Run multiple states in one command.
-- Use default tag set (do not over-filter with flags).
-
----
-
-## 6) Important notes
-
-- Scraping **all businesses in the USA** is a large batch job; run in chunks by state.
-- Respect each site's Terms of Service and robots.txt.
-- Follow applicable anti-spam/privacy laws (CAN-SPAM, GDPR where applicable, etc.).
+📈 2. Usage & Common CommandsA) The "Standard Pull" (State-Based)Collect up to 1,000 unique leads from a specific state.Bashpython scraper.py --states "Texas" --target-per-state 1000 --output tx_leads.csv
+B) Multi-State BatchingPerfect for larger campaigns across high-density markets.Bashpython scraper.py --states "California" "Florida" "New York" --target-per-state 800 --output east_west_leads.csv
+C) Category-Specific FilteringNarrow your focus to specific business types using OSM tags.Bashpython scraper.py --states "Arizona" --amenity --shop --office --output az_business.csv
+D) Fast Mode (No Crawling)If you only need data already present in the OpenStreetMap database and want to skip the time-consuming website visits:Bashpython scraper.py --states "Nevada" --skip-enrichment --output nv_fast.csv
+⚙️ 3. How the Engine WorksThe scraper operates in a three-tier intelligence cycle to maximize your lead hit rate:OSM/Overpass Layer: Queries global map data for entities tagged as businesses within a specific U.S. state boundary.Metadata Extraction: Instantly captures any phone, email, or website tags provided by the community.Crawler Layer: If a website exists but no email is found, the bot "crawls" the homepage and linked contact pages to extract hidden @gmail.com or corporate emails and decision-maker titles.📋 4. Output Data StructureThe generated CSV file is ready for upload to any CRM (like HubSpot, Salesforce) or your Zentrixa Master Sheet.ColumnDescriptionnameThe primary name of the business.emailThe primary contact email found (prioritizes info@/contact@).websiteThe verified business URL.owner_nameThe name of the CEO/Owner (Best-effort extraction).company_nameThe brand name or parent entity.stateThe U.S. state targeted in the search.sourceThe origin of the lead (e.g., OpenStreetMap/Overpass).⚠️ 5. TroubleshootingConnectionResetError: [WinError 10054]Reason: The Overpass server is being hammered or your query is too large.Fix: Lower your --limit-per-query (try 500) or wait 5 minutes before retrying.python: command not foundFix: Ensure your virtual environment is active or use python3 instead of python.Not reaching your "Target" lead countFix: Some states have fewer businesses tagged in OSM. Try broadening your categories (don't use --shop only) or target more densely populated states like Texas or California.⚖️ 6. Compliance & ResponsibilityRobots.txt: The crawler includes a built-in delay (delay_s = 0.6) to respect web server limits.Laws: Users must comply with CAN-SPAM (USA) and local privacy laws.Usage: Zentrixa Support & Relations uses this tool for legitimate B2B outreach only.

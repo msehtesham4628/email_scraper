@@ -1,57 +1,19 @@
-# USA Business Email Scraper
+🚀 USA Business Email Scraper (Zentrixa Edition)This high-performance Python CLI tool is engineered to build B2B lead lists targeting the U.S. market. It bridges the gap between raw map data and active web intelligence by combining OpenStreetMap (OSM) queries with automated website crawling.💎 Key FeaturesMulti-Source Extraction: Pulls names, websites, and emails directly from OSM.Deep Web Enrichment: Automatically visits business websites to find "Contact" or "About" pages.Lead Intelligence: Uses Regex to identify Owner, CEO, and Founder names from site metadata.Deduplication: Ensures you never pay for or contact the same lead twice.No Heavy Dependencies: Designed to run with Python’s standard library for maximum portability.🛠️ 1. Setup & InstallationFollow these steps to set up your environment on Windows (MINGW64/CMD) or Linux.Bash# 1. Navigate to your project folder
+cd /path/to/your/leads_folder
 
-This project provides a Python CLI that builds a lead list of U.S. businesses and attempts to extract:
-
-- Business name
-- Email
-- Website
-- Owner name (best effort)
-- Company name
-
-## Important notes
-
-- Scraping "all businesses in the USA" is very large. This tool is designed to run by state and category in batches.
-- Data quality depends on public website metadata and page content.
-- You must comply with each website's Terms of Service and robots.txt.
-- Use responsibly and follow applicable privacy/spam laws (CAN-SPAM, GDPR where applicable, etc.).
-
-## Setup
-
-```bash
+# 2. Create a virtual environment to keep things clean
 python -m venv .venv
+
+# 3. Activate the environment
+# On Windows:
+source .venv/Scripts/activate 
+# On Mac/Linux:
 source .venv/bin/activate
+
+# 4. Install requirements (SerpApi, gspread, etc.)
 pip install -r requirements.txt
-```
-
-## Usage
-
-Example: scrape businesses in California and Texas.
-
-```bash
-python scraper.py --states "California" "Texas" --limit-per-state 150 --output data/business_leads.csv
-```
-
-Optional category filters (OpenStreetMap tag based):
-
-```bash
-python scraper.py --states "New York" --shop --office --amenity --limit-per-state 100
-```
-
-## Output
-
-CSV columns:
-
-- `name`
-- `email`
-- `website`
-- `owner_name`
-- `company_name`
-- `state`
-- `source`
-
-## How it works
-
-1. Queries OpenStreetMap (Overpass API) for businesses in selected state(s).
-2. Reads any OSM-provided website/email/operator fields.
-3. Crawls homepage + contact/about pages to extract emails and likely owner names.
-4. Writes de-duplicated records to CSV.
+📈 2. Usage & Common CommandsA) The "Standard Pull" (State-Based)Collect up to 1,000 unique leads from a specific state.Bashpython scraper.py --states "Texas" --target-per-state 1000 --output tx_leads.csv
+B) Multi-State BatchingPerfect for larger campaigns across high-density markets.Bashpython scraper.py --states "California" "Florida" "New York" --target-per-state 800 --output east_west_leads.csv
+C) Category-Specific FilteringNarrow your focus to specific business types using OSM tags.Bashpython scraper.py --states "Arizona" --amenity --shop --office --output az_business.csv
+D) Fast Mode (No Crawling)If you only need data already present in the OpenStreetMap database and want to skip the time-consuming website visits:Bashpython scraper.py --states "Nevada" --skip-enrichment --output nv_fast.csv
+⚙️ 3. How the Engine WorksThe scraper operates in a three-tier intelligence cycle to maximize your lead hit rate:OSM/Overpass Layer: Queries global map data for entities tagged as businesses within a specific U.S. state boundary.Metadata Extraction: Instantly captures any phone, email, or website tags provided by the community.Crawler Layer: If a website exists but no email is found, the bot "crawls" the homepage and linked contact pages to extract hidden @gmail.com or corporate emails and decision-maker titles.📋 4. Output Data StructureThe generated CSV file is ready for upload to any CRM (like HubSpot, Salesforce) or your Zentrixa Master Sheet.ColumnDescriptionnameThe primary name of the business.emailThe primary contact email found (prioritizes info@/contact@).websiteThe verified business URL.owner_nameThe name of the CEO/Owner (Best-effort extraction).company_nameThe brand name or parent entity.stateThe U.S. state targeted in the search.sourceThe origin of the lead (e.g., OpenStreetMap/Overpass).⚠️ 5. TroubleshootingConnectionResetError: [WinError 10054]Reason: The Overpass server is being hammered or your query is too large.Fix: Lower your --limit-per-query (try 500) or wait 5 minutes before retrying.python: command not foundFix: Ensure your virtual environment is active or use python3 instead of python.Not reaching your "Target" lead countFix: Some states have fewer businesses tagged in OSM. Try broadening your categories (don't use --shop only) or target more densely populated states like Texas or California.⚖️ 6. Compliance & ResponsibilityRobots.txt: The crawler includes a built-in delay (delay_s = 0.6) to respect web server limits.Laws: Users must comply with CAN-SPAM (USA) and local privacy laws.Usage: Zentrixa Support & Relations uses this tool for legitimate B2B outreach only.
